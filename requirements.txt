@@ -1,3 +1,8 @@
+# general
 dependency-injector==3.44.0
 
+# command
 click==7.1.2
+
+# server
+Flask==1.1.2

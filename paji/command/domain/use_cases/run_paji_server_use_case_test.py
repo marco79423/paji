@@ -5,10 +5,10 @@ from paji.command.domain.use_cases import RunPajiServerUseCase
 
 
 def test_run_paji_server():
-    wsgi_server_helper = mock.MagicMock(spec=helpers.WSGIServerHelperBase)
+    paji_server_helper = mock.MagicMock(spec=helpers.PAJIServerHelperBase)
 
     uc = RunPajiServerUseCase(
-        wsgi_server_helper=wsgi_server_helper,
+        paji_server_helper=paji_server_helper,
     )
 
     uc.execute(
@@ -17,7 +17,7 @@ def test_run_paji_server():
         is_dev=True,
     )
 
-    wsgi_server_helper.serve.assert_called_with(
+    paji_server_helper.serve.assert_called_with(
         host='0.0.0.0',
         port=9527,
         is_dev=True,

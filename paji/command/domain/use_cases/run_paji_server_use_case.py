@@ -12,11 +12,13 @@ class RunPajiServerUseCaseBase(base_types.UseCase):
 
 class RunPajiServerUseCase(RunPajiServerUseCaseBase):
 
-    def __init__(self, wsgi_server_helper: helpers.WSGIServerHelperBase):
-        self._wsgi_server_helper = wsgi_server_helper
+    def __init__(self,
+                 paji_server_helper: helpers.PAJIServerHelperBase,
+                 ):
+        self._paji_server_helper = paji_server_helper
 
     def execute(self, host: str, port: int, is_dev: bool):
-        self._wsgi_server_helper.serve(
+        self._paji_server_helper.serve(
             host=host,
             port=port,
             is_dev=is_dev,

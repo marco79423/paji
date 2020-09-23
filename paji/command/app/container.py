@@ -1,5 +1,6 @@
 from dependency_injector import containers, providers
 
+from paji import server
 from paji.command.app.cli import create_cli
 from paji.command.app.manager import Manager
 from paji.command.domain import use_cases
@@ -7,18 +8,22 @@ from paji.command.infrastructure import helpers
 
 
 class CommandContainer(containers.DeclarativeContainer):
+    ServerContainer = providers.Container(
+        server.ServerContainer
+    )
+
     ConsoleHelper = providers.Factory(
         helpers.ConsoleHelper,
     )
 
-    WSGIServerHelper = providers.Factory(
-        helpers.WSGIServerHelper,
-        console_helper=ConsoleHelper,
+    PAJIServerHelper = providers.Factory(
+        helpers.PAJIServerHelper,
+        paji_server=ServerContainer.PAJIServer,
     )
 
     RunPajiServerUseCase = providers.Factory(
         use_cases.RunPajiServerUseCase,
-        wsgi_server_helper=WSGIServerHelper,
+        paji_server_helper=PAJIServerHelper,
     )
 
     Manager = providers.Factory(
