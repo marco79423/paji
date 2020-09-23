@@ -1,6 +1,7 @@
 import abc
 
-from paji.command.domain import base_types, helpers
+from paji.command.domain import helpers
+from paji.shared import base_types
 
 
 class RunPajiServerUseCaseBase(base_types.UseCase):
