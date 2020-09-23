@@ -1,6 +1,6 @@
 import abc
 
-from paji.command.domain import use_cases
+from paji.command.domain import use_cases, helpers
 
 
 class ManagerBase(abc.ABC):
@@ -17,12 +17,14 @@ class ManagerBase(abc.ABC):
 class Manager(ManagerBase):
 
     def __init__(self,
-                 run_paji_server_use_case=use_cases.RunPajiServerUseCaseBase
+                 console_helper: helpers.ConsoleHelperBase,
+                 run_paji_server_use_case: use_cases.RunPajiServerUseCaseBase
                  ):
+        self._console_helper = console_helper
         self._run_paji_server_use_case = run_paji_server_use_case
 
     def hello(self, name: str):
-        print(f'哈囉 {name}')
+        self._console_helper.print(f'哈囉 {name}')
 
     def run_server(self, host: str, port: int, is_dev: bool):
         self._run_paji_server_use_case.execute(

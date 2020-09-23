@@ -7,8 +7,13 @@ from paji.command.infrastructure import helpers
 
 
 class Container(containers.DeclarativeContainer):
+    ConsoleHelper = providers.Factory(
+        helpers.ConsoleHelper,
+    )
+
     WSGIServerHelper = providers.Factory(
         helpers.WSGIServerHelper,
+        console_helper=ConsoleHelper,
     )
 
     RunPajiServerUseCase = providers.Factory(
@@ -18,7 +23,8 @@ class Container(containers.DeclarativeContainer):
 
     Manager = providers.Factory(
         Manager,
-        run_paji_server_use_case=RunPajiServerUseCase
+        console_helper=ConsoleHelper,
+        run_paji_server_use_case=RunPajiServerUseCase,
     )
 
     create_cli = providers.Callable(
