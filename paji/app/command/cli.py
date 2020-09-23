@@ -1,9 +1,9 @@
 import click
 
-from .manager import Manager
+from .manager import ManagerBase
 
 
-def create_cli(manager: Manager):
+def create_cli(manager: ManagerBase):
     @click.group()
     def cli():
         """兩大類專案中台"""
