@@ -1,1 +1,1 @@
-from paji.command.app.container import Container
+from paji.command.app.container import CommandContainer

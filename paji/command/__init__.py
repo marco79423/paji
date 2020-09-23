@@ -1,6 +1,6 @@
-from paji.command.app import Container
+from paji.command.app import CommandContainer
 
-container = Container()
+container = CommandContainer()
 cli = container.create_cli()
 
 if __name__ == '__main__':

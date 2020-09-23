@@ -6,7 +6,7 @@ from paji.command.domain import use_cases
 from paji.command.infrastructure import helpers
 
 
-class Container(containers.DeclarativeContainer):
+class CommandContainer(containers.DeclarativeContainer):
     ConsoleHelper = providers.Factory(
         helpers.ConsoleHelper,
     )
