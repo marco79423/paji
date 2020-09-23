@@ -18,7 +18,7 @@ def create_cli(manager: ManagerBase):
     @click.option('--host', default='0.0.0.0', help='啟動的 host')
     @click.option('-p', '--port', default=8000, help='啟動的 port')
     @click.option('-d', '--dev', is_flag=True, default=False, help='開發者模式')
-    def serve(host, port, dev):
+    def serve(host: str, port: int, dev: bool):
         manager.run_server(host=host, port=port, is_dev=dev)
 
     return cli
