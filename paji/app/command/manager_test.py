@@ -1,4 +1,4 @@
-from .manager import Manager
+from paji.app.command.manager import Manager
 
 
 def test_hello(capsys):

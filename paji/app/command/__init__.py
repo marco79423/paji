@@ -1,4 +1,4 @@
-from .container import Container
+from paji.app.command.container import Container
 
 container = Container()
 cli = container.create_cli()

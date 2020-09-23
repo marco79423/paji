@@ -1,6 +1,6 @@
 import click
 
-from .manager import ManagerBase
+from paji.app.command.manager import ManagerBase
 
 
 def create_cli(manager: ManagerBase):
