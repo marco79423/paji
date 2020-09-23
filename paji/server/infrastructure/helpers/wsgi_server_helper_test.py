@@ -3,14 +3,16 @@ from unittest import mock
 
 import flask
 import pytest
-
 from paji.server.infrastructure.helpers import WSGIServerHelper
 
 
 def test_run_dev_server_with_flask_app():
     flask_app = mock.MagicMock(spec=flask.Flask)
+    wsgi_application_prod_serve_func = mock.MagicMock()
 
-    wsgi_server_helper = WSGIServerHelper()
+    wsgi_server_helper = WSGIServerHelper(
+        wsgi_application_prod_serve_func=wsgi_application_prod_serve_func,
+    )
     wsgi_server_helper.serve(flask_app, '1.1.1.1', 9527, True)
 
     flask_app.logger.setLevel.assert_called_with(logging.DEBUG)
@@ -19,8 +21,11 @@ def test_run_dev_server_with_flask_app():
 
 def test_run_dev_server_without_flask_app():
     app = mock.MagicMock()
+    wsgi_application_prod_serve_func = mock.MagicMock()
 
-    wsgi_server_helper = WSGIServerHelper()
+    wsgi_server_helper = WSGIServerHelper(
+        wsgi_application_prod_serve_func=wsgi_application_prod_serve_func,
+    )
 
     with pytest.raises(NotImplementedError):
         wsgi_server_helper.serve(app, '1.1.1.1', 9527, True)
@@ -28,8 +33,16 @@ def test_run_dev_server_without_flask_app():
 
 def test_run_prod_server():
     app = mock.MagicMock()
+    wsgi_application_prod_serve_func = mock.MagicMock()
 
-    wsgi_server_helper = WSGIServerHelper()
+    wsgi_server_helper = WSGIServerHelper(
+        wsgi_application_prod_serve_func=wsgi_application_prod_serve_func,
+    )
 
-    with pytest.raises(NotImplementedError):
-        wsgi_server_helper.serve(app, '1.1.1.1', 9527, False)
+    wsgi_server_helper.serve(app, '1.1.1.1', 9527, False)
+
+    wsgi_application_prod_serve_func.assert_called_with(
+        app,
+        host='1.1.1.1',
+        port=9527,
+    )

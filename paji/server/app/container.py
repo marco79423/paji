@@ -1,4 +1,5 @@
 import flask
+import waitress
 from dependency_injector import containers, providers
 from dependency_injector.ext import flask as flask_ext
 
@@ -11,6 +12,7 @@ class ServerContainer(containers.DeclarativeContainer):
     # helpers
     WSGIServerHelper = providers.Factory(
         helpers.WSGIServerHelper,
+        wsgi_application_prod_serve_func=waitress.serve,
     )
 
     # views
