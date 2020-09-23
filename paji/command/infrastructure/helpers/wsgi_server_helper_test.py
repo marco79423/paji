@@ -1,4 +1,4 @@
-from paji.infrastructure.command.helpers import WSGIServerHelper
+from paji.command.infrastructure.helpers import WSGIServerHelper
 
 
 def test_run_server(capsys):

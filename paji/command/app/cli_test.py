@@ -3,7 +3,7 @@ from unittest import mock
 
 from click.testing import CliRunner
 
-from paji.app.command.cli import create_cli
+from paji.command.app.cli import create_cli
 
 
 def test_hello():

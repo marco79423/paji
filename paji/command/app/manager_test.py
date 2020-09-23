@@ -1,7 +1,7 @@
 from unittest import mock
 
-from paji.app.command.manager import Manager
-from paji.domain.command import use_cases
+from paji.command.app.manager import Manager
+from paji.command.domain import use_cases
 
 
 def test_hello(capsys):

@@ -1,7 +1,7 @@
 from unittest import mock
 
-from paji.domain.command import helpers
-from paji.domain.command.use_cases.run_paji_server_use_case import RunPajiServerUseCase
+from paji.command.domain import helpers
+from paji.command.domain.use_cases import RunPajiServerUseCase
 
 
 def test_run_paji_server():

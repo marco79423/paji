@@ -1,4 +1,4 @@
-from paji.domain.command import helpers
+from paji.command.domain import helpers
 
 
 class WSGIServerHelper(helpers.WSGIServerHelperBase):

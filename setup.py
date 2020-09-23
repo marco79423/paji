@@ -26,7 +26,7 @@ setuptools.setup(
     include_package_data=True,
     entry_points={
         'console_scripts': [
-            'paji = paji.app.command:cli'
+            'paji = paji.command:cli'
         ]
     },
     classifiers=[

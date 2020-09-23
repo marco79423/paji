@@ -1,6 +1,6 @@
 import abc
 
-from paji.domain.command import use_cases
+from paji.command.domain import use_cases
 
 
 class ManagerBase(abc.ABC):

@@ -1,9 +1,9 @@
 from dependency_injector import containers, providers
 
-from paji.app.command.cli import create_cli
-from paji.app.command.manager import Manager
-from paji.domain.command import use_cases
-from paji.infrastructure.command import helpers
+from paji.command.app.cli import create_cli
+from paji.command.app.manager import Manager
+from paji.command.domain import use_cases
+from paji.command.infrastructure import helpers
 
 
 class Container(containers.DeclarativeContainer):
