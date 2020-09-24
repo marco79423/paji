@@ -3,7 +3,7 @@ from typing import Type
 
 import flask
 
-from paji.server.app.flask_extensions.routes_ext.routes import demo
+from paji.server.app.flask_extensions.routes_ext.routes import demo, internal
 
 
 class RoutesExtBase(abc.ABC):
@@ -17,13 +17,29 @@ class RoutesExt(RoutesExtBase):
     """設定 paji 的路由"""
 
     def __init__(self,
+                 # 內部相關
+                 get_all_routes_class: Type[internal.GetAllRoutesView],
                  say_hello_view_class: Type[demo.SayHelloView],
                  ):
+        self._get_all_routes_class = get_all_routes_class
         self._say_hello_view_class = say_hello_view_class
 
     def init_app(self, app: flask.Flask):
-        # DEMO 相關路由
+
         with app.app_context():
-            blueprint = flask.Blueprint('demo', __name__, url_prefix='/demo')
-            blueprint.add_url_rule('/hello', view_func=self._say_hello_view_class.as_view('hello'), methods=['GET'])
-            app.register_blueprint(blueprint)
+            self._set_internal_routes(app)
+            self._set_demo_routes(app)
+
+    def _set_internal_routes(self, app: flask.Flask):
+        """設定內部相關路由"""
+        blueprint = flask.Blueprint('internal', __name__, url_prefix='/internal')
+        blueprint.add_url_rule('/routes',
+                               view_func=self._get_all_routes_class.as_view('get_all_routes'),
+                               methods=['GET'])
+        app.register_blueprint(blueprint)
+
+    def _set_demo_routes(self, app: flask.Flask):
+        """設定 DEMO 相關路由"""
+        blueprint = flask.Blueprint('demo', __name__, url_prefix='/demo')
+        blueprint.add_url_rule('/hello', view_func=self._say_hello_view_class.as_view('hello'), methods=['GET'])
+        app.register_blueprint(blueprint)

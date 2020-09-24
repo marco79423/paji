@@ -6,7 +6,8 @@ from paji import server
 
 @pytest.fixture
 def app():
-    paji_server = server.container.PAJIServer()
+    container = server.ServerContainer()
+    paji_server = container.PAJIServer()
     return paji_server.get_app()
 
 
