@@ -4,7 +4,7 @@ from dependency_injector import containers, providers
 from dependency_injector.ext import flask as flask_ext
 
 from paji.server.app import paji_server, flask_extensions
-from paji.server.app.flask_extensions.routes_ext.routes import demo, internal
+from paji.server.app.flask_extensions.routes_ext.routes import demo, internal, root
 from paji.server.domain import use_cases
 from paji.server.infrastructure import helpers
 
@@ -31,6 +31,10 @@ class ServerContainer(containers.DeclarativeContainer):
     )
 
     # views
+    GetRootView = flask_ext.ClassBasedView(
+        root.GetRootView,
+    )
+
     GetAllRoutesView = flask_ext.ClassBasedView(
         internal.GetAllRoutesView,
         get_all_routes_use_case=GetAllRoutesUseCase,
@@ -42,6 +46,7 @@ class ServerContainer(containers.DeclarativeContainer):
     # flask extensions
     RoutesExt = flask_ext.Extension(
         flask_extensions.RoutesExt,
+        get_root_view_class=GetRootView.provider,
         get_all_routes_class=GetAllRoutesView.provider,
         say_hello_view_class=SayHelloView.provider,
     )
