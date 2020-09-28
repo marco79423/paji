@@ -47,7 +47,7 @@ class ServerContainer(containers.DeclarativeContainer):
     RoutesExt = flask_ext.Extension(
         flask_extensions.RoutesExt,
         get_root_view_class=GetRootView.provider,
-        get_all_routes_class=GetAllRoutesView.provider,
+        get_all_routes_view_class=GetAllRoutesView.provider,
         say_hello_view_class=SayHelloView.provider,
     )
 

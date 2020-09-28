@@ -20,12 +20,12 @@ class RoutesExt(RoutesExtBase):
                  # 根
                  get_root_view_class: Type[root.GetRootView],
                  # 內部相關
-                 get_all_routes_class: Type[internal.GetAllRoutesView],
+                 get_all_routes_view_class: Type[internal.GetAllRoutesView],
                  # DEMO 相關
                  say_hello_view_class: Type[demo.SayHelloView],
                  ):
         self._get_root_view_class = get_root_view_class
-        self._get_all_routes_class = get_all_routes_class
+        self._get_all_routes_view_class = get_all_routes_view_class
         self._say_hello_view_class = say_hello_view_class
 
     def init_app(self, app: flask.Flask):
@@ -42,7 +42,7 @@ class RoutesExt(RoutesExtBase):
         """設定內部相關路由"""
         blueprint = flask.Blueprint('internal', __name__, url_prefix='/internal')
         blueprint.add_url_rule('/routes',
-                               view_func=self._get_all_routes_class.as_view('get_all_routes'),
+                               view_func=self._get_all_routes_view_class.as_view('get_all_routes'),
                                methods=['GET'])
         app.register_blueprint(blueprint)
 
