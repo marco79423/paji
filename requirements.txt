@@ -1,6 +1,8 @@
 # general
 dependency-injector==3.44.0
 
+paji-sdk==0.1.0a1
+
 # command
 click==7.1.2
 
