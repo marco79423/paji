@@ -1,6 +1,6 @@
 from typing import Set
 
-from paji.shared import base_types
+from paji_sdk.base import base_types
 
 
 class Route(base_types.Entity):
