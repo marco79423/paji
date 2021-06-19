@@ -36,11 +36,11 @@ class RoutesExt(RoutesExtBase):
 
     def _set_root_route(self, app: flask.Flask):
         """設定根路由"""
-        app.add_url_rule('/', view_func=self._get_root_view_class.as_view('get_root'), methods=['GET'])
+        app.add_url_rule('/api', view_func=self._get_root_view_class.as_view('get_root'), methods=['GET'])
 
     def _set_internal_routes(self, app: flask.Flask):
         """設定內部相關路由"""
-        blueprint = flask.Blueprint('internal', __name__, url_prefix='/internal')
+        blueprint = flask.Blueprint('internal', __name__, url_prefix='/api/internal')
         blueprint.add_url_rule('/routes',
                                view_func=self._get_all_routes_view_class.as_view('get_all_routes'),
                                methods=['GET'])
@@ -48,6 +48,6 @@ class RoutesExt(RoutesExtBase):
 
     def _set_demo_routes(self, app: flask.Flask):
         """設定 DEMO 相關路由"""
-        blueprint = flask.Blueprint('demo', __name__, url_prefix='/demo')
+        blueprint = flask.Blueprint('demo', __name__, url_prefix='/api/demo')
         blueprint.add_url_rule('/hello', view_func=self._say_hello_view_class.as_view('hello'), methods=['GET'])
         app.register_blueprint(blueprint)
