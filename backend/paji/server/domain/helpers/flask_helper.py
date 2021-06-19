@@ -2,7 +2,7 @@ import abc
 from typing import List
 
 from paji.server.domain import entities
-from paji.shared import base_types
+from paji_sdk.base import base_types
 
 
 class FlaskHelperBase(base_types.Helper):

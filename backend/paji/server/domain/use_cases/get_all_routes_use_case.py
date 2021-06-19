@@ -1,7 +1,7 @@
 from typing import List
 
 from paji.server.domain import helpers, entities
-from paji.shared import base_types
+from paji_sdk.base import base_types
 
 
 class GetAllRoutesUseCase(base_types.UseCase):

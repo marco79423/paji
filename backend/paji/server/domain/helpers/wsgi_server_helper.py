@@ -1,6 +1,6 @@
 import abc
 
-from paji.shared import base_types
+from paji_sdk.base import base_types
 
 
 class WSGIServerHelperBase(base_types.Helper):
