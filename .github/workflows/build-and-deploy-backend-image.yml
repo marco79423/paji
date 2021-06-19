@@ -22,8 +22,10 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build image
-        run: docker build --file Dockerfile --tag marco79423/paji:latest .
+        working-directory: ./backend
+        run: docker build --file Dockerfile --tag marco79423/paji-backend:latest .
       - name: Push image
+        working-directory: ./backend
         run: |
           DATE=$(date +"%y%m%d%H%M%S")
 
@@ -36,10 +38,10 @@ jobs:
           # Use Docker `latest` tag convention
           [ "$VERSION" == "master" ] && VERSION=latest
 
-          docker push marco79423/paji:latest
+          docker push marco79423/paji-backend:latest
 
-          docker tag marco79423/paji:latest marco79423/paji:$VERSION
-          docker push marco79423/paji:$VERSION
+          docker tag marco79423/paji-backend:latest marco79423/paji-backend:$VERSION
+          docker push marco79423/paji-backend:$VERSION
 
-          docker tag marco79423/paji:latest marco79423/paji:$DATE
-          docker push marco79423/paji:$DATE
+          docker tag marco79423/paji-backend:latest marco79423/paji-backend:$DATE
+          docker push marco79423/paji-backend:$DATE
