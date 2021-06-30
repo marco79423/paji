@@ -1,12 +1,11 @@
 # 啪唧 paji
 
-兩大類的工具包
+兩大類的專用中台
 
 ## 架構說明
 
-區分為兩個部分：
-
-* Server 端 (paji 服務器)
-    * 運用後端資源提供各種服務，運行在 https://paji.marco79423.net
-* Command 端 (paji 指令)
-    * 協同後端和 Client 本身的運算能力提供各種服務
+    paji/
+        command/     # 指令相關功能
+        server/      # 服務器
+        demo/        # DEMO 功能
+        backup/      # 資料庫備份
