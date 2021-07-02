@@ -25,6 +25,5 @@ class Server:
             waitress.serve(self._flask_app, host=host, port=port)
 
     def _setup_extensions(self):
-        # 設定路由
-        DemoExt.init_app(self._flask_app)
-        InternalExt.init_app(self._flask_app)
+        DemoExt(self._flask_app)
+        InternalExt(self._flask_app)
