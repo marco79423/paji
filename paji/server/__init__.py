@@ -3,6 +3,8 @@ import logging
 import flask
 import waitress
 
+from config_ext import ConfigExt
+from db_backup_ext import DBBackupExt
 from paji.demo_ext import DemoExt
 from paji.internal_ext import InternalExt
 
@@ -25,5 +27,7 @@ class Server:
             waitress.serve(self._flask_app, host=host, port=port)
 
     def _setup_extensions(self):
-        DemoExt(self._flask_app)
+        ConfigExt(self._flask_app)
         InternalExt(self._flask_app)
+        DemoExt(self._flask_app)
+        DBBackupExt(self._flask_app)

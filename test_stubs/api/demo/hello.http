@@ -1,0 +1,7 @@
+### 說哈囉 (陌生人)
+
+GET {{server}}/api/demo/hello
+
+### 說哈囉 (兩大類)
+
+GET {{server}}/api/demo/hello?name=兩大類
