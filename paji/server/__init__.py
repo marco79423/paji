@@ -3,8 +3,8 @@ import logging
 import flask
 import waitress
 
-from config_ext import ConfigExt
-from db_backup_ext import DBBackupExt
+from paji.config_ext import ConfigExt
+from paji.db_backup_ext import DBBackupExt
 from paji.demo_ext import DemoExt
 from paji.internal_ext import InternalExt
 
@@ -20,6 +20,13 @@ class Server:
         return self._flask_app
 
     def serve(self, host: str, port: int, is_dev: bool):
+        # 設定環境
+        logging.basicConfig(
+            level=logging.INFO,
+            datefmt='%Y-%m-%d %H:%M:%S',
+            format='[%(asctime)s][%(levelname)s] %(message)s',
+        )
+
         if is_dev:
             self._flask_app.logger.setLevel(logging.DEBUG)
             self._flask_app.run(host=host, port=port, debug=True)

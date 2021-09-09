@@ -1,17 +1,15 @@
-# config
-omegaconf==2.0.5
-
 # general
-dependency-injector==3.44.0
-
 paji-sdk==0.1.0a1
-
-# command
+omegaconf==2.0.5
+dependency-injector==3.44.0
 click==7.1.2
 
 # server
 Flask==1.1.2
 waitress==1.4.4
 
-# scheduler
+# db_backup_ext
 APScheduler==3.6.3
+google-cloud-container==2.7.1
+kubernetes==18.20.0
+dropbox==11.17.0
