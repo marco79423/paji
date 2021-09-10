@@ -2,6 +2,7 @@ import click
 
 from paji.server import Server
 
+
 def create_cli():
     @click.group()
     def cli():
