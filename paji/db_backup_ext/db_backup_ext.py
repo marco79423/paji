@@ -31,10 +31,10 @@ class DBBackupExt:
             scheduler.add_job(
                 self.handle_backup_task,
                 CronTrigger.from_crontab(backup_plan.schedule, timezone=pytz.timezone(config.timezone)),
-                [backup_plan]
+                [config, backup_plan]
             )
 
-    def handle_backup_task(self, backup_plan):
+    def handle_backup_task(self, config, backup_plan):
         self.app.logger.info(f'開始執行 backup_plan {backup_plan.name} ...')
 
         # 取得資料庫客戶端
@@ -50,7 +50,7 @@ class DBBackupExt:
                 raise DataError('資料庫內容不應為空')
 
             # 將備份上傳到備份地點
-            backup_path = self._generate_backup_path(backup_plan, database_name)
+            backup_path = self._generate_backup_path(config, backup_plan, database_name)
             backup_storage.upload(
                 path=backup_path,
                 data=raw_sql.encode('utf-8'),
@@ -73,12 +73,12 @@ class DBBackupExt:
             raise ValueError(f'不支援的儲存庫 {backup_storage.provider}')
 
     @staticmethod
-    def _generate_backup_path(backup_plan, database_name):
+    def _generate_backup_path(config, backup_plan, database_name):
         """產生備份的檔案名稱"""
         backup_path = backup_plan.backup_storage.file_pattern
 
         # 取代變數
         backup_path = backup_path.replace('{database_name}', database_name)
-        backup_path = dt.datetime.now().strftime(backup_path)
+        backup_path = dt.datetime.now(pytz.timezone(config.timezone)).strftime(backup_path)
 
         return backup_path
