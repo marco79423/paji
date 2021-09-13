@@ -4,7 +4,7 @@ import flask
 import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-from paji_sdk.base.exceptions import NotFoundError, DataError
+from paji_sdk.base.exceptions import DataError
 
 from paji.db_backup_ext.gke_mysql_client import GKEMysqlClient
 from paji.db_backup_ext.storage import DropboxStorage
@@ -22,7 +22,8 @@ class DBBackupExt:
 
         config = app.config['config'].db_backup
         if not config:
-            raise NotFoundError('不存在必要的設定檔')
+            app.logger.info('放棄啟動 DB Backup： 不存在必要的設定檔')
+            return
 
         scheduler = BackgroundScheduler()
         scheduler.start()

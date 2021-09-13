@@ -28,4 +28,7 @@ class ConfigExt:
 
     @property
     def db_backup(self):
+        if not self._config.db_backup:
+            return None
         return DBBackupConfig(self, self._config.db_backup)
+
