@@ -2,12 +2,14 @@ import pathlib
 
 import flask
 from omegaconf import OmegaConf
+from paji_sdk.base.exceptions import NotFoundError
 
 from paji.config_ext.db_backup_config import DBBackupConfig
 
 
 class ConfigExt:
     CONFIG_FOLDER = pathlib.Path('./conf.d')
+    CONFIG_FILE_PATH = CONFIG_FOLDER / 'config.yml'
 
     def __init__(self, app: flask.Flask):
         self._config = None
@@ -15,7 +17,10 @@ class ConfigExt:
         self.init_app(app)
 
     def init_app(self, app: flask.Flask):
-        self._config = OmegaConf.load(self.CONFIG_FOLDER / 'config.yml')
+        try:
+            self._config = OmegaConf.load(self.CONFIG_FILE_PATH)
+        except FileNotFoundError:
+            raise NotFoundError(f'設定檔 {self.CONFIG_FILE_PATH} 不存在 ')
 
         app.config.update({
             'config': self,
