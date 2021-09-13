@@ -34,6 +34,8 @@ class DBBackupExt:
                 [config, backup_plan]
             )
 
+        app.logger.info('啟動 DB Backup 成功')
+
     def handle_backup_task(self, config, backup_plan):
         self.app.logger.info(f'開始執行 backup_plan {backup_plan.name} ...')
 
