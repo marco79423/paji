@@ -5,6 +5,7 @@ from omegaconf import OmegaConf
 from paji_sdk.base.exceptions import NotFoundError
 
 from paji.config_ext.db_backup_config import DBBackupConfig
+from paji.config_ext.jessiclient_config import JessiclientConfig
 
 
 class ConfigExt:
@@ -32,3 +33,8 @@ class ConfigExt:
             return None
         return DBBackupConfig(self, self._config.db_backup)
 
+    @property
+    def jessiclient(self):
+        if not self._config.jessiclient:
+            return None
+        return JessiclientConfig(self, self._config.jessiclient)

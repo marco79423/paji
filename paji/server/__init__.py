@@ -7,6 +7,7 @@ from paji.config_ext import ConfigExt
 from paji.db_backup_ext import DBBackupExt
 from paji.demo_ext import DemoExt
 from paji.internal_ext import InternalExt
+from paji.jessiclient_ext import JessiclientExt
 
 
 class Server:
@@ -38,3 +39,4 @@ class Server:
         InternalExt(self._flask_app)
         DemoExt(self._flask_app)
         DBBackupExt(self._flask_app)
+        JessiclientExt(self._flask_app)

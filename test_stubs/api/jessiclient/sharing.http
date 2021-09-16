@@ -1,0 +1,11 @@
+### 新增限時專案
+POST {{server}}/jessiclient/sharing/projects
+Content-Type: application/json
+
+{"setting":{"maxMessageCount":100},"connection":{"url":"ws://10.200.6.101:18700/player-api/ws?token=905ae792-34f3-4424-8776-70a00b88c761"},"request":{"body":""},"schedule":{"timeInterval":"1","request":{"text":""}},"favoriteRequest":{"ids":[],"entities":{}},"message":{"ids":["CQYeTO"],"entities":{"CQYeTO":{"id":"CQYeTO","time":"2021-03-09T11:54:11.073Z","source":"client","text":"ping"}}}}
+
+
+### 取得指定限時專案
+GET {{server}}/jessiclient/sharing/projects/7849fcbd4988e6ae2c92bd8a41c5e5ca
+Content-Type: application/json
+
