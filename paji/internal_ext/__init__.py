@@ -11,7 +11,7 @@ class InternalExt:
     def init_app(self, app: flask.Flask):
         with app.app_context():
             """設定內部相關路由"""
-            blueprint = flask.Blueprint('internal', __name__, url_prefix='/api/internal')
+            blueprint = flask.Blueprint('internal', __name__, url_prefix='/_')
             blueprint.add_url_rule('/routes',
                                    view_func=GetAllRoutesView.as_view('get_all_routes'),
                                    methods=['GET'])
