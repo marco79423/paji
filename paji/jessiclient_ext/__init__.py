@@ -27,7 +27,7 @@ class JessiclientExt:
 
         with app.app_context():
             """設定 Jessiclient 相關路由"""
-            blueprint = flask.Blueprint('jessiclient', __name__, url_prefix='/jessiclient')
+            blueprint = flask.Blueprint('jessiclient', __name__, url_prefix='/api/jessiclient')
             blueprint.add_url_rule('/sharing/projects',
                                    view_func=CreateSharingProjectView.as_view('create_sharing_project', config, redis_client),
                                    methods=['POST'])
