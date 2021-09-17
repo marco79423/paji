@@ -2,6 +2,7 @@ import logging
 
 import flask
 import waitress
+import flask_cors
 
 from paji.config_ext import ConfigExt
 from paji.db_backup_ext import DBBackupExt
@@ -35,6 +36,11 @@ class Server:
             waitress.serve(self._flask_app, host=host, port=port)
 
     def _setup_extensions(self):
+        flask_cors.CORS(self._flask_app, origins=[
+            'http://localhost:*',
+            'https://*.marco79423.net',
+        ])
+
         ConfigExt(self._flask_app)
         InternalExt(self._flask_app)
         DemoExt(self._flask_app)
