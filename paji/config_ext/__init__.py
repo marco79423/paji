@@ -4,6 +4,7 @@ import flask
 from omegaconf import OmegaConf
 from paji_sdk.base.exceptions import NotFoundError
 
+from paji.config_ext.jessigod_config import JessigodConfig
 from paji.config_ext.db_backup_config import DBBackupConfig
 from paji.config_ext.jessiclient_config import JessiclientConfig
 
@@ -38,3 +39,9 @@ class ConfigExt:
         if not self._config.jessiclient:
             return None
         return JessiclientConfig(self, self._config.jessiclient)
+
+    @property
+    def jessigod(self):
+        if not self._config.jessigod:
+            return None
+        return JessigodConfig(self, self._config.jessigod)

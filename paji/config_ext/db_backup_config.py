@@ -5,7 +5,7 @@ class DBBackupConfig:
 
     @property
     def timezone(self):
-        return self._config.timezone
+        return self._base_config.server.timezone
 
     @property
     def backup_plans(self):

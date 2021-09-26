@@ -1,9 +1,10 @@
 import logging
 
 import flask
-import waitress
 import flask_cors
+import waitress
 
+from paji.jessigod_ext import JessigodExt
 from paji.config_ext import ConfigExt
 from paji.db_backup_ext import DBBackupExt
 from paji.demo_ext import DemoExt
@@ -46,3 +47,4 @@ class Server:
         DemoExt(self._flask_app)
         DBBackupExt(self._flask_app)
         JessiclientExt(self._flask_app)
+        JessigodExt(self._flask_app)

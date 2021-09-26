@@ -1,0 +1,2 @@
+### 成功取得所有来源
+GET {{server}}/api/jessigod/origins
