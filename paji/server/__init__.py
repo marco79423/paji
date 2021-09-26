@@ -37,8 +37,8 @@ class Server:
 
     def _setup_extensions(self):
         flask_cors.CORS(self._flask_app, origins=[
-            'http://localhost:*',
-            'https://*.marco79423.net',
+            r'http://localhost:\d+',
+            r'https://[^.]*.?marco79423.net',
         ])
 
         ConfigExt(self._flask_app)
