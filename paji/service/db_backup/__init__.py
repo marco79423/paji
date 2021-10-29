@@ -1,41 +1,31 @@
 import datetime as dt
 
-import flask
 import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from paji_sdk.base.exceptions import DataError
 
-from paji.db_backup_ext.gke_mysql_client import GKEMysqlClient
-from paji.db_backup_ext.storage import DropboxStorage
+from paji.service.base import ServiceBase
+from paji.service.db_backup.gke_mysql_client import GKEMysqlClient
+from paji.service.db_backup.storage import DropboxStorage
 
 
-class DBBackupExt:
+class DBBackupService(ServiceBase):
 
-    def __init__(self, app: flask.Flask):
-        self.app = None
-
-        self.init_app(app)
-
-    def init_app(self, app: flask.Flask):
+    def __init__(self, app, config, scheduler):
         self.app = app
+        self.config = config
+        self.scheduler = scheduler
 
-        config = app.config['config'].db_backup
-        if not config:
-            app.logger.info('放棄啟動 DB Backup： 不存在必要的設定檔')
-            return
-
-        scheduler = BackgroundScheduler()
-        scheduler.start()
-
-        for backup_plan in config.backup_plans:
-            scheduler.add_job(
+    def start(self):
+        for backup_plan in self.config.services.db_backup.backup_plans:
+            self.scheduler.add_job(
                 self.handle_backup_task,
-                CronTrigger.from_crontab(backup_plan.schedule, timezone=pytz.timezone(config.timezone)),
-                [config, backup_plan]
+                CronTrigger.from_crontab(backup_plan.schedule, timezone=pytz.timezone(self.config.server.timezone)),
+                [self.config, backup_plan]
             )
 
-        app.logger.info('啟動 DB Backup 成功')
+        self.app.logger.info('啟動 DB Backup 成功')
 
     def handle_backup_task(self, config, backup_plan):
         self.app.logger.info(f'開始執行 backup_plan {backup_plan.name} ...')
@@ -82,6 +72,6 @@ class DBBackupExt:
 
         # 取代變數
         backup_path = backup_path.replace('{database_name}', database_name)
-        backup_path = dt.datetime.now(pytz.timezone(config.timezone)).strftime(backup_path)
+        backup_path = dt.datetime.now(pytz.timezone(config.server.timezone)).strftime(backup_path)
 
         return backup_path

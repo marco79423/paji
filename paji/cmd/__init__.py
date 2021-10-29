@@ -1,4 +1,4 @@
-from paji.command.cli import create_cli
+from paji.cmd.cli import create_cli
 
 cli = create_cli()
 

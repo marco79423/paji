@@ -30,7 +30,7 @@ setuptools.setup(
     include_package_data=True,
     entry_points={
         'console_scripts': [
-            'paji = paji.command:cli'
+            'paji = paji.cmd:cli'
         ]
     },
     classifiers=[

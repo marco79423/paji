@@ -1,4 +1,4 @@
-from paji.db_backup_ext.gke_mysql_client.gke_cluster import GKECluster
+from paji.service.db_backup.gke_mysql_client.gke_cluster import GKECluster
 
 
 class GKEMysqlClient:
