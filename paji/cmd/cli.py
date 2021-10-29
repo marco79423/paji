@@ -1,12 +1,12 @@
 import click
 
-from paji.server import Server
+from paji.app.server import Server
 
 
 def create_cli():
     @click.group()
     def cli():
-        """兩大類專用中台"""
+        """兩大類專用後台"""
         pass
 
     @cli.command('hello', short_help='打個招呼')
