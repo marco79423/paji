@@ -1,11 +1,11 @@
 import logging
 import pathlib
 
-import flask
-import flask_cors
-import redis
-import waitress
+import fastapi
+import uvicorn
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
+from fastapi.middleware.cors import CORSMiddleware
 from omegaconf import OmegaConf
 from paji_sdk.base.exceptions import NotFoundError
 
@@ -18,8 +18,6 @@ class Server:
     CONFIG_FILE_PATH = CONFIG_FOLDER / 'config.yml'
 
     def serve(self, host: str, port: int, is_dev: bool):
-        flask_app = flask.Flask(__name__)
-
         # 設定設定檔
         try:
             config = OmegaConf.load(self.CONFIG_FILE_PATH)
@@ -38,33 +36,36 @@ class Server:
             format='[%(asctime)s][%(levelname)s] %(message)s',
         )
 
-        # 設定第三方擴充
-        flask_cors.CORS(flask_app, origins=[
-            r'http://localhost:\d+',
-            r'https://[^.]*.?marco79423.net',
-        ])
-
         # 設定 Scheduler
         scheduler = BackgroundScheduler()
         scheduler.start()
 
-        # 設定 cache client
-        redis_client = redis.Redis(
-            host=config.cache.redis.host,
-            port=config.cache.redis.port,
+        app = fastapi.FastAPI()
+        app.state.config = config
+        app.state.logger = logging.getLogger()
+        app.state.scheduler = scheduler
+
+        # 設定第三方擴充
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=[
+                r'http://localhost:9002',
+                r'https://jessigod.marco79423.net',
+                r'http://localhost:9003',
+                r'https://jessiclient.marco79423.net',
+            ],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
         )
 
         # 設定並啟動服務
         if config.services.jessiclient:
-            serv = JessiclientService(flask_app, config, redis_client)
-            serv.start()
+            serv = JessiclientService(app)
+            serv.setup()
 
         if config.services.db_backup:
-            serv = DBBackupService(flask_app, config, scheduler)
-            serv.start()
+            serv = DBBackupService(app)
+            serv.setup()
 
-        if is_dev:
-            flask_app.logger.setLevel(logging.DEBUG)
-            flask_app.run(host=host, port=port, debug=True)
-        else:
-            waitress.serve(flask_app, host=host, port=port)
+        uvicorn.run(app, host=host, port=port)

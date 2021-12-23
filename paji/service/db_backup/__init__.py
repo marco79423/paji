@@ -1,7 +1,6 @@
 import datetime as dt
 
 import pytz
-from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from paji_sdk.base.exceptions import DataError
 
@@ -12,23 +11,20 @@ from paji.service.db_backup.storage import DropboxStorage
 
 class DBBackupService(ServiceBase):
 
-    def __init__(self, app, config, scheduler):
-        self.app = app
-        self.config = config
-        self.scheduler = scheduler
-
-    def start(self):
+    def setup(self):
         for backup_plan in self.config.services.db_backup.backup_plans:
+            trigger = CronTrigger.from_crontab(backup_plan.schedule, timezone=pytz.timezone(self.config.server.timezone))
             self.scheduler.add_job(
                 self.handle_backup_task,
-                CronTrigger.from_crontab(backup_plan.schedule, timezone=pytz.timezone(self.config.server.timezone)),
+                trigger,
                 [self.config, backup_plan]
             )
+            self.logger.info(f'啟動 Backup Plan {backup_plan.name} ({trigger}) 成功')
 
-        self.app.logger.info('啟動 DB Backup 成功')
+        self.logger.info('啟動 DB Backup 成功')
 
     def handle_backup_task(self, config, backup_plan):
-        self.app.logger.info(f'開始執行 backup_plan {backup_plan.name} ...')
+        self.logger.info(f'開始執行 backup_plan {backup_plan.name} ...')
 
         # 取得資料庫客戶端
         db_client = self._get_database_client(backup_plan.source_database)
