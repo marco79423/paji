@@ -3,7 +3,6 @@ import json
 
 import fastapi
 
-from paji.dependencies import get_config
 from paji.service.jessiclient import get_redis_client
 from paji.service.jessiclient.dependencies import get_jessiclient_config
 

@@ -1,0 +1,41 @@
+import pytz
+import telegram
+from apscheduler.triggers.cron import CronTrigger
+
+from paji.service.base import ServiceBase
+from paji.service.jessigod import core
+from paji.service.jessigod.routes import admin, sayings, bots
+
+
+class JessigodService(ServiceBase):
+
+    def setup(self):
+        # 設定機器人
+        self._setup_telegram_bot()
+
+        # 設定排程
+        self._setup_scheduler()
+
+        # 設定路由
+        self._setup_routes()
+
+        self.logger.info('啟動 Jessiclient 成功')
+
+    def _setup_telegram_bot(self):
+        telegram_bot_config = self.config.services.jessigod.bots.telegram_bot
+        if telegram_bot_config:
+            bot = telegram.Bot(telegram_bot_config.token)
+            bot.set_webhook(telegram_bot_config.url)
+
+    def _setup_scheduler(self):
+        preacher_config = self.config.services.jessigod.preacher
+        for schedule in preacher_config.schedules:
+            self.scheduler.add_job(
+                core.handle_schedule_task,
+                CronTrigger.from_crontab(schedule, timezone=pytz.timezone(self.config.server.timezone))
+            )
+
+    def _setup_routes(self):
+        self.app.include_router(admin.router)
+        self.app.include_router(sayings.router)
+        self.app.include_router(bots.router)

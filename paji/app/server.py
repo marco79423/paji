@@ -11,6 +11,7 @@ from paji_sdk.base.exceptions import NotFoundError
 
 from paji.service.db_backup import DBBackupService
 from paji.service.jessiclient import JessiclientService
+from paji.service.jessigod import JessigodService
 
 
 class Server:
@@ -66,6 +67,10 @@ class Server:
 
         if config.services.db_backup:
             serv = DBBackupService(app)
+            serv.setup()
+
+        if config.services.jessigod:
+            serv = JessigodService(app)
             serv.setup()
 
         uvicorn.run(app, host=host, port=port)
