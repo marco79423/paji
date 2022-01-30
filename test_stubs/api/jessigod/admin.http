@@ -1,0 +1,7 @@
+### 成功傳道
+POST {{server}}/api/jessigod/preach
+Authorization: Jessigod admin
+
+{
+  "mode": "random"
+}

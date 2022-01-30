@@ -1,14 +1,27 @@
+from secrets import compare_digest
+
 import linebot
 import slack_sdk
 import telegram
 from fastapi.exceptions import HTTPException
 from linebot.exceptions import LineBotApiError
 from linebot.models import TextSendMessage
-from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy import func, create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 from paji import utils
 from paji.service.jessigod import models, schemas
+
+
+def get_db_session(config):
+    engine = create_engine(
+        config.database_url,
+        pool_recycle=100,  # 多少時間自動重連 (MySQL 預設會 8 小時踢人)
+    )
+
+    SessionLocal = sessionmaker(bind=engine)
+    db = SessionLocal(bind=engine)
+    return db
 
 
 def get_or_create_editor(db: Session, token: str):
@@ -137,7 +150,7 @@ def modify_saying(db: Session, token: str, saying_id: str, saying_in: schemas.Sa
     if not token:
         raise HTTPException(status_code=404, detail='該名言不存在')
 
-    if saying.editor.token != token:
+    if not compare_digest(saying.editor.token, token):
         raise HTTPException(status_code=403, detail='不能修改別人新增的名言')
 
     origin = get_or_create_origin(db, saying_in.origin)
@@ -158,14 +171,14 @@ def delete_saying(db: Session, token: str, saying_id: str):
     if not token:
         raise HTTPException(status_code=404, detail='該名言不存在')
 
-    if saying.editor.token != token:
+    if not compare_digest(saying.editor.token, token):
         raise HTTPException(status_code=403, detail='不能刪除別人新增的名言')
 
     db.delete(saying)
     db.commit()
 
 
-def handle_propagation_task(task_id, task_in: schemas.TaskIn, db: Session):
+def handle_propagation_task(task_id, config, task_in: schemas.TaskIn, db: Session):
     mode = task_in.mode if task_in.mode else 'random'
     if mode == 'random':
         saying = db.query(models.Saying).order_by(func.random()).first()
@@ -176,9 +189,9 @@ def handle_propagation_task(task_id, task_in: schemas.TaskIn, db: Session):
     if not saying:
         return
 
-    if conf.bots.line_bot:
+    if config.bots.line_bot:
         try:
-            line_bot_api = linebot.LineBotApi(conf.bots.line_bot.channel_access_token)
+            line_bot_api = linebot.LineBotApi(config.bots.line_bot.channel_access_token)
             line_bot_api.broadcast(TextSendMessage(text=f'{saying.content} - {saying.origin.name}'))
             for line_group in get_line_groups(db):
                 line_bot_api.push_message(line_group.group_id,
@@ -186,17 +199,17 @@ def handle_propagation_task(task_id, task_in: schemas.TaskIn, db: Session):
         except LineBotApiError as e:
             print('Line Bot 出錯：', e)
 
-    if conf.bots.telegram_bot:
-        bot = telegram.Bot(conf.bots.telegram_bot.token)
+    if config.bots.telegram_bot:
+        bot = telegram.Bot(config.bots.telegram_bot.token)
 
         for telegram_group in get_telegram_groups(db):
             bot.send_message(chat_id=telegram_group.chat_id, text=f'{saying.content} - {saying.origin.name}')
 
-    if conf.bots.slack_bot:
-        if isinstance(conf.bots.slack_bot.webhook_url, str):
-            webhook_urls = [conf.bots.slack_bot.webhook_url]
+    if config.bots.slack_bot:
+        if isinstance(config.bots.slack_bot.webhook_url, str):
+            webhook_urls = [config.bots.slack_bot.webhook_url]
         else:
-            webhook_urls = list(conf.bots.slack_bot.webhook_url)
+            webhook_urls = list(config.bots.slack_bot.webhook_url)
 
         for webhook_url in webhook_urls:
             client = slack_sdk.webhook.WebhookClient(webhook_url)
@@ -205,47 +218,49 @@ def handle_propagation_task(task_id, task_in: schemas.TaskIn, db: Session):
     print(f'任務 {task_id} 完成！')
 
 
-def handle_schedule_task():
+def handle_schedule_task(config):
     task_id = utils.generate_id(),
 
-    db = database.SessionLocal()
+    session = get_db_session(config)
     try:
-        handle_propagation_task(task_id, schemas.TaskIn(
+        handle_propagation_task(task_id, config, schemas.TaskIn(
             mode='random',
-        ), db)
+        ), session)
     finally:
-        db.close()
+        session.close()
 
 
-def handle_line_events(events):
-    db = database.SessionLocal()
+def handle_line_events(config, events):
+    session = get_db_session(config)
+    try:
+        for event in events:
+            print('line event', event)
+            if event.type == 'join':
+                if event.source.type == 'group':
+                    line_group = get_or_create_line_group(session, event.source.group_id)
+                    line_bot_api = linebot.LineBotApi(config.bots.line_bot.channel_access_token)
+                    line_bot_api.push_message(line_group.group_id, TextSendMessage(text='西卡神降臨，快恭迎！'))
 
-    for event in events:
-        print('line event', event)
-        if event.type == 'join':
-            if event.source.type == 'group':
-                line_group = get_or_create_line_group(db, event.source.group_id)
-                line_bot_api = linebot.LineBotApi(conf.bots.line_bot.channel_access_token)
-                line_bot_api.push_message(line_group.group_id, TextSendMessage(text='西卡神降臨，快恭迎！'))
-
-        if event.type == 'leave':
-            if event.source.type == 'group':
-                delete_line_group(db, event.source.group_id)
+            if event.type == 'leave':
+                if event.source.type == 'group':
+                    delete_line_group(session, event.source.group_id)
+    finally:
+        session.close()
 
 
-def handle_telegram_update(json_body):
-    db = database.SessionLocal()
-    bot = telegram.Bot(conf.bots.telegram_bot.token)
+def handle_telegram_update(config, json_body):
+    session = get_db_session(config)
+    bot = telegram.Bot(config.bots.telegram_bot.token)
 
     update = telegram.Update.de_json(json_body, bot)
     print('telegram update', update)
 
     if update.message.new_chat_members:
         for member in update.message.new_chat_members:
-            if member.username == conf.bots.telegram_bot.bot_username:
-                telegram_group = get_or_create_telegram_group(db, str(update.message.chat_id))
+            if member.username == config.bots.telegram_bot.bot_username:
+                telegram_group = get_or_create_telegram_group(session, str(update.message.chat_id))
                 bot.send_message(chat_id=telegram_group.chat_id, text='西卡神降臨，快恭迎！')
 
     if update.message.left_chat_member:
-        if update.message.left_chat_member.username == conf.bots.telegram_bot.bot_username:
-            delete_telegram_group(db, chat_id=str(update.message.chat_id))
+        if update.message.left_chat_member.username == config.bots.telegram_bot.bot_username:
+            delete_telegram_group(session, chat_id=str(update.message.chat_id))

@@ -19,7 +19,7 @@ class JessigodService(ServiceBase):
         # 設定路由
         self._setup_routes()
 
-        self.logger.info('啟動 Jessiclient 成功')
+        self.logger.info('啟動 Jessigod 成功')
 
     def _setup_telegram_bot(self):
         telegram_bot_config = self.config.services.jessigod.bots.telegram_bot
@@ -28,11 +28,13 @@ class JessigodService(ServiceBase):
             bot.set_webhook(telegram_bot_config.url)
 
     def _setup_scheduler(self):
-        preacher_config = self.config.services.jessigod.preacher
-        for schedule in preacher_config.schedules:
+        jessigod_config = self.config.services.jessigod
+        for schedule in jessigod_config.preacher.schedules:
+            trigger = CronTrigger.from_crontab(schedule, timezone=pytz.timezone(self.config.server.timezone))
             self.scheduler.add_job(
                 core.handle_schedule_task,
-                CronTrigger.from_crontab(schedule, timezone=pytz.timezone(self.config.server.timezone))
+                trigger,
+                [jessigod_config],
             )
 
     def _setup_routes(self):

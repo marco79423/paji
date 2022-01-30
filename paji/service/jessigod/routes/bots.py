@@ -9,6 +9,7 @@ from starlette.background import BackgroundTasks
 
 from paji.service.jessigod import core
 from paji.service.jessigod.dependencies import get_jessigod_config
+from secrets import compare_digest
 
 router = fastapi.APIRouter()
 
@@ -25,7 +26,7 @@ async def create_propagation_task(
     parser = linebot.WebhookParser(jessigod_config.bots.line_bot.channel_secret)
     events = parser.parse(body.decode(), x_line_signature)
     if events:
-        background_tasks.add_task(core.handle_line_events, events)
+        background_tasks.add_task(core.handle_line_events, jessigod_config, events)
 
     return 'ok'
 
@@ -37,10 +38,10 @@ async def create_propagation_task(
         background_tasks: BackgroundTasks,
         jessigod_config=fastapi.Depends(get_jessigod_config),
 ):
-    if jessigod_config.bots.telegram_bot.token != token:
+    if not compare_digest(jessigod_config.bots.telegram_bot.token, token):
         return 'not ok'
 
     body = await request.body()
-    background_tasks.add_task(core.handle_telegram_update, json.loads(body))
+    background_tasks.add_task(core.handle_telegram_update, jessigod_config, json.loads(body))
 
     return 'ok'

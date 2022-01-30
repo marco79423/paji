@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from paji.service.jessigod import schemas, core
 from paji.service.jessigod.dependencies import get_db
+from secrets import compare_digest
 
 router = fastapi.APIRouter()
 
@@ -57,6 +58,7 @@ async def get_sayings(
         credentials: HTTPAuthorizationCredentials = Security(security),
         db: Session = Depends(get_db)):
     token = credentials.credentials
+
     sayings = core.get_sayings(
         db,
         token=credentials.credentials,
@@ -69,7 +71,7 @@ async def get_sayings(
             schemas.Saying(
                 id=saying.id,
                 origin=saying.origin.name,
-                editable=saying.editor.token == token,
+                editable=compare_digest(saying.editor.token, token),
                 content=saying.content,
             ) for saying in sayings.offset(page_index * page_size).limit(page_size)
         ],
@@ -120,7 +122,7 @@ async def create_saying(
         data=schemas.Saying(
             id=saying.id,
             origin=saying.origin.name,
-            editable=saying.editor.token == token,
+            editable=compare_digest(saying.editor.token, token),
             content=saying.content,
         )
     )
@@ -144,7 +146,7 @@ async def modify_saying(
         data=schemas.Saying(
             id=saying.id,
             origin=saying.origin.name,
-            editable=saying.editor.token == token,
+            editable=compare_digest(saying.editor.token, token),
             content=saying.content,
         )
     )
