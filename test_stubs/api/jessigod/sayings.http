@@ -1,0 +1,16 @@
+### 成功取得名言列表
+GET {{server}}/api/jessigod/sayings
+Authorization: Jessi bac
+
+### 成功取得名言列表 (指定頁數)
+GET {{server}}/api/jessigod/sayings?pageIndex=1&pageSize=2
+Authorization: Jessi bac
+
+### 成功取得名言列表 (指定頁數)
+GET {{server}}/api/jessigod/sayings?editorOnly=1
+Authorization: Jessi bac
+
+### 隨機取得名言
+GET {{server}}/api/jessigod/random-saying
+Authorization: Jessi bac
+

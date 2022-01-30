@@ -1,7 +1,14 @@
 # general
 paji-sdk==0.2.2
-omegaconf==2.0.5
+
+# cli
 click==7.1.2
+
+# config
+omegaconf==2.0.5
+
+# schema
+pydantic==1.7.3
 
 # server
 fastapi==0.62.0
@@ -20,5 +27,7 @@ google-cloud-container==2.7.1
 kubernetes==18.20.0
 dropbox==11.17.0
 
-# jessiclient
-redis==3.5.3
+# jessigod
+line-bot-sdk==1.18.0
+python-telegram-bot==13.1
+slack_sdk==3.1.1
