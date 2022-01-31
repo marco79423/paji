@@ -13,4 +13,3 @@ Authorization: Jessi bac
 ### 隨機取得名言
 GET {{server}}/api/jessigod/random-saying
 Authorization: Jessi bac
-

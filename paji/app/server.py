@@ -3,7 +3,6 @@ import pathlib
 
 import fastapi
 import uvicorn
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi.middleware.cors import CORSMiddleware
 from omegaconf import OmegaConf
