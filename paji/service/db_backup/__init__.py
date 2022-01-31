@@ -1,4 +1,6 @@
+import copy
 import datetime as dt
+import os
 
 import pytz
 from apscheduler.triggers.cron import CronTrigger
@@ -45,11 +47,15 @@ class DBBackupService(ServiceBase):
                 data=raw_sql.encode('utf-8'),
             )
 
-    @staticmethod
-    def _get_database_client(source_database):
+    def _get_database_client(self, source_database):
         """取得對應的資料庫客戶端"""
         if source_database.type == 'gke':
-            return GKEMysqlClient(source_database.connection)
+            connection_info = copy.deepcopy(source_database.connection)
+            connection_info.service_account_file = os.path.join(
+                self.config.app.config_folder,
+                connection_info.service_account_file,
+            )
+            return GKEMysqlClient(connection_info)
         else:
             raise ValueError(f'不支援的資料庫 Client {source_database.type}')
 
@@ -68,6 +74,9 @@ class DBBackupService(ServiceBase):
 
         # 取代變數
         backup_path = backup_path.replace('{database_name}', database_name)
-        backup_path = dt.datetime.now(pytz.timezone(config.server.timezone)).strftime(backup_path)
+
+        # 取代時間 (處理 strftime 不支援中文編碼的問題)
+        now = dt.datetime.now(pytz.timezone(config.server.timezone))
+        backup_path = now.strftime(backup_path.encode('unicode_escape').decode('utf-8')).encode('utf-8').decode('unicode_escape')
 
         return backup_path
