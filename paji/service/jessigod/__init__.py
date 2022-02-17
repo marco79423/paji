@@ -1,15 +1,19 @@
 import pytz
 import telegram
 from apscheduler.triggers.cron import CronTrigger
+from sqlalchemy import create_engine
 
 from paji.service.base import ServiceBase
 from paji.service.jessigod import core
-from paji.service.jessigod.routes import admin, sayings, bots
+from paji.service.jessigod.routes import admin, bots, sayings
 
 
 class JessigodService(ServiceBase):
 
     def setup(self):
+        # 設定 DB
+        self._setup_db()
+
         # 設定機器人
         self._setup_telegram_bot()
 
@@ -20,6 +24,11 @@ class JessigodService(ServiceBase):
         self._setup_routes()
 
         self.logger.info('啟動 Jessigod 成功')
+
+    def _setup_db(self):
+        jessigod_config = self.config.services.jessigod
+        engine = create_engine(jessigod_config.database_url)
+        models.Base.metadata.create_all(bind=engine)
 
     def _setup_telegram_bot(self):
         telegram_bot_config = self.config.services.jessigod.bots.telegram_bot
