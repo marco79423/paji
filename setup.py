@@ -17,7 +17,7 @@ with open(os.path.join(base_dir, 'README.md'), encoding='utf-8') as fp:
 
 setuptools.setup(
     name='paji',
-    version='0.2.0',
+    version='0.2.1',
     author='兩大類',
     author_email='marco79423@gmail.com',
     url='https://github.com/marco79423/paji',
