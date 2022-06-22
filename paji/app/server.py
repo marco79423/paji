@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from omegaconf import OmegaConf
 from paji_sdk.base.exceptions import NotFoundError
 
+from paji.service.blog import BlogService
 from paji.service.db_backup import DBBackupService
 from paji.service.jessiclient import JessiclientService
 from paji.service.jessigod import JessigodService
@@ -49,6 +50,8 @@ class Server:
         app.add_middleware(
             CORSMiddleware,
             allow_origins=[
+                r'http://localhost:9001',
+                r'https://marco79423.net',
                 r'http://localhost:9002',
                 r'https://jessigod.marco79423.net',
                 r'http://localhost:9003',
@@ -60,6 +63,10 @@ class Server:
         )
 
         # 設定並啟動服務
+        if config.services.blog:
+            serv = BlogService(app)
+            serv.setup()
+
         if config.services.jessiclient:
             serv = JessiclientService(app)
             serv.setup()
