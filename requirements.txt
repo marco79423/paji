@@ -23,9 +23,9 @@ redis==3.5.3
 
 # db_backup_ext
 APScheduler==3.6.3
-google-cloud-container==2.7.1
-kubernetes==18.20.0
-dropbox==11.17.0
+google-cloud-container==2.10.8
+kubernetes==23.6.0
+dropbox==11.32.0
 
 # jessigod
 line-bot-sdk==1.18.0
