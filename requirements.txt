@@ -26,8 +26,3 @@ APScheduler==3.6.3
 google-cloud-container==2.10.8
 kubernetes==23.6.0
 dropbox==11.32.0
-
-# jessigod
-line-bot-sdk==1.18.0
-python-telegram-bot==13.1
-slack_sdk==3.1.1

@@ -9,8 +9,6 @@ from omegaconf import OmegaConf
 from paji_sdk.base.exceptions import NotFoundError
 
 from paji.service.db_backup import DBBackupService
-from paji.service.jessiclient import JessiclientService
-from paji.service.jessigod import JessigodService
 
 
 class Server:
@@ -49,10 +47,6 @@ class Server:
         app.add_middleware(
             CORSMiddleware,
             allow_origins=[
-                r'http://localhost:9002',
-                r'https://jessigod.marco79423.net',
-                r'http://localhost:9003',
-                r'https://jessiclient.marco79423.net',
             ],
             allow_credentials=True,
             allow_methods=["*"],
@@ -60,16 +54,8 @@ class Server:
         )
 
         # 設定並啟動服務
-        if config.services.jessiclient:
-            serv = JessiclientService(app)
-            serv.setup()
-
         if config.services.db_backup:
             serv = DBBackupService(app)
-            serv.setup()
-
-        if config.services.jessigod:
-            serv = JessigodService(app)
             serv.setup()
 
         uvicorn.run(app, host=host, port=port)
